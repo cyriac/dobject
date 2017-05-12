@@ -1,6 +1,19 @@
 import ujson as json
 
-class DObjectConvert(object):
+class DObject(object):
+    def __init__(self, dictionary={}):
+        self.__dict__.update(dictionary)
+        for k, v in dictionary.items():
+            if isinstance(v, dict):
+                self.__dict__[k] = Struct(v)
+
+    def __eq__(self, other):
+        if hasattr(other, 'to_dict'):
+            other = other.to_dict()
+        elif hasattr(other, '__dict__'):
+            other = other.__dict__
+        return self.to_dict() == other
+
     def to_dict(self):
         return self.__dict__
 
@@ -19,11 +32,3 @@ class DObjectConvert(object):
         else:
             raise Exception("No file or string provided")
         return cls(data)
-
-
-class DObject(DObjectConvert):
-    def __init__(self, dictionary={}):
-        self.__dict__.update(dictionary)
-        for k, v in dictionary.items():
-            if isinstance(v, dict):
-                self.__dict__[k] = Struct(v)
