@@ -17,6 +17,9 @@ class DObject(object):
             other = other.__dict__
         return self.to_dict() == other
 
+    def __getitem__(self, key):
+        return self.to_dict()[key]
+
     def to_dict(self):
         return self.__dict__
 
