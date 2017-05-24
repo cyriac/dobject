@@ -5,7 +5,10 @@ class DObject(object):
         self.__dict__.update(dictionary)
         for k, v in dictionary.items():
             if isinstance(v, dict):
-                self.__dict__[k] = Struct(v)
+                self.__dict__[k] = DObject(v)
+            elif isinstance(v, list):
+                if len(v) > 0  and isinstance(v[0], dict):
+                    self.__dict__[k] = [DObject(_v) for _v in v]
 
     def __eq__(self, other):
         if hasattr(other, 'to_dict'):
