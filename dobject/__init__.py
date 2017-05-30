@@ -1,4 +1,11 @@
-import ujson as json
+import json
+
+
+class DObjectEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, DObject):
+            return obj.to_dict()
+        return json.JSONEncoder.default(self, obj)
 
 class DObject(object):
     def __init__(self, dictionary={}):
@@ -23,18 +30,18 @@ class DObject(object):
     def to_dict(self):
         return self.__dict__
 
-    def to_json(self, filename=None):
+    def to_json(self, filename=None, cls=DObjectEncoder):
         d = self.to_dict()
         if filename:
-            json.dump(open(filename, 'w'), d)
-        return json.dumps(d)
+            json.dump(open(filename, 'w'), d, cls=cls)
+        return json.dumps(d, cls=cls)
 
     @classmethod
-    def from_json(cls, filename=None, string=None):
+    def from_json(klass, filename=None, string=None, cls=json.JSONDecoder):
         if filename:
-            data = json.load(open(filename))
+            data = json.load(open(filename), cls=cls)
         elif string:
-            data = json.loads(string)
+            data = json.loads(string, cls=cls)
         else:
             raise Exception("No file or string provided")
-        return cls(data)
+        return klass(data)
